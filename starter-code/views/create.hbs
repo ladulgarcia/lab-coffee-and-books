@@ -1,0 +1,56 @@
+<div>
+      <form action="/create" method="POST">
+        <div class="form-group">
+          <label for="">Name</label>
+          <input type="text" name="name" placeholder="Name" /><br><br>
+
+          <label for="">Type</label>
+          <select name="type" id="">
+              <option value="coffee shop">coffee shop</option>
+              <option value="bookstore">bookstore</option>
+          </select>
+        </div>
+         <div class="form-group">
+      <label for="longitude">Longitude</label>
+      <input id="lng" class="form-control" type="text" name="lng" placeholder="Longitude" />
+    </div>
+    <div class="form-group">
+      <label for="latitude">Latitude</label>
+      <input id="lat" class="form-control" type="text" name="lat" placeholder="Latitude" />
+    </div>
+
+        <button type="submit" class="btn btn-primary">Create place</button>
+        <br>
+        <br>
+    <div>
+      <div>
+        <div id="search"></div>
+        <div id='map' style='display: inline-flex;width: 400px; height: 300px;'></div>
+      </div>
+      <div id="map" style="width: 500px; height: 400px"></div>
+      <script>
+        let input_lng = document.getElementById("lng");
+        let input_lat = document.getElementById("lat");
+        let input_address = document.getElementById("address")
+        mapboxgl.accessToken =
+          "pk.eyJ1IjoibWx6eiIsImEiOiJjanUwbTRtaTQxc3RzNDRtZmdtaXF1dXVxIn0.k3hMbEeCzUKaDn2sIsULjA";
+        let map = new mapboxgl.Map({ container: "map", style: "mapbox://styles/mapbox/streets-v11" });
+        let geocoder = new MapboxGeocoder({
+          accessToken: mapboxgl.accessToken
+        });
+        document.getElementById("search").appendChild(geocoder.onAdd(map))
+        geocoder.on("result", res => {
+          let [lng, lat] = res.result.center;
+          let address = res.result.place_name;
+          input_lng.value = lng;
+          input_lat.value = lat;
+          input_address.value = address;
+        });
+        map.addControl(new mapboxgl.NavigationControl());
+      </script>
+    </div>
+ </form>
+
+ <a href="/lugares"><button type="submit" class="btn btn-primary">Go to places</button></a>
+
+</div>

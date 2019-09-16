@@ -1,0 +1,73 @@
+<h1>Places</h1>
+<a href="/">Inicio</a>
+<ul class="list-group"></ul>{{#each places as |place|}}
+<li class="list-group-item"><p>Name: {{place.name}}</p>
+<p>Type: {{place.type}}</p>
+<form action="/lugares" method="POST">
+<a href="/delete/{{place._id}}">
+<button type="button" class="btn btn-primary">Delete Lugar</button>
+</a><br><br>
+<a href="/update-place/{{place._id}}">
+<button type="button" class="btn btn-primary">Update Lugar</button>
+</a>
+</form>
+</li>
+</ul>
+{{/each}}
+
+<a href="/create"><button>Add new Location</button> </a>
+
+    <div id="map" style="width: 800px; height: 600px"></div>
+
+<script>
+
+    mapboxgl.accessToken = 'pk.eyJ1IjoibGpub2JsZXM0MjAzOSIsImEiOiJjazBkeG45eGYwYnY0M2ltcWt3ejNpYzhpIn0.EhUvMyEhXm-0ew4mBvhDag';
+    const map = new mapboxgl.Map({
+      container: "map",
+      style: "mapbox://styles/mapbox/streets-v10",
+    });
+
+    map.addControl(new MapboxDirections({accessToken: mapboxgl.accessToken}), 'top-left')
+    map.addControl(new mapboxgl.NavigationControl())
+     //   map.addControl(new MapboxDirections({}))
+    
+
+// Try to get a geolocation object from the web browser
+if (navigator.geolocation) {
+
+  navigator.geolocation.getCurrentPosition(function (position) {
+    // Create an object to match Mapbox's Lat-Lng array format
+    const center = [
+      position.coords.longitude,
+      position.coords.latitude,
+    ];
+
+      map.setZoom(10).setCenter(center);
+
+      new mapboxgl.Marker({ color: "red" })
+        .setLngLat(center)
+        .setPopup(new mapboxgl.Popup().setHTML("<p>You are here</p>"))
+        .addTo(map);
+  }, function () {
+  });
+} else {
+
+}
+
+
+
+  let locations = []
+  let names = []
+  {{#each places as | place |}}
+  locations.push({{{ place.location }}})
+  names.push("{{place.name}}")
+  {{/each}}
+      locations.forEach((place, i) => {
+        let [lng, lat] = place.coordinates
+        let place_position = [lng, lat]
+        let popup = new mapboxgl.Popup().setText(names[i])
+        let marker = new mapboxgl.Marker().setLngLat(place_position).setPopup(popup).addTo(map)
+      })
+
+
+</script>
